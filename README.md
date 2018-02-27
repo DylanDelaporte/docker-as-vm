@@ -21,3 +21,7 @@ chmod +x configure_host.sh
 chmod +x create_docker.sh
 ./create_docker.sh "name"
 ~~~~
+
+## In the future (todo list)
+
+Read PORTS file and add automatically to docker wanted ports associated with subdomains name-servicename.domain.com
