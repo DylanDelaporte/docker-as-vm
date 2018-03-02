@@ -25,9 +25,17 @@ name=$1$date
 echo $name > $DOCKER_RUNNING_FILE
 
 PORT=$(( ( $RANDOM % 3000 )  + 62000 ))
+PORTS_STRING=""
 
-PORT_PLUS=$(( $PORT + 1 ))
-echo $PORT $PORT_PLUS
+while read port_number service_name
+do
+	echo "Setting service $service_name at port $port_number"
+
+	PORTS_STRING="$PORTS_STRING -p $PORT:$port_number"
+	PORT=$(( $PORT + 1))
+done < PORTS
+
+echo $PORTS_STRING
 
 #Run docker
 #docker build -t sshdo .
