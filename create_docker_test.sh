@@ -1,10 +1,14 @@
 #!/bin/bash
 
+echo "---- Creating docker"
+
 if [ $# -lt 1 ]
 then
-	echo "not enough arguments"
+	echo "ERROR: not enough arguments"
 	exit 1
 fi
+
+echo "- docker name: $1"
 
 DOCKER_RUNNING_FILE=docker$1.running
 
