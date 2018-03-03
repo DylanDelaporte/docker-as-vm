@@ -24,6 +24,10 @@ if [ -f $DOCKER_RUNNING_FILE ]; then
 		fi
 
 		docker rm $OLD_NAME
+
+		echo "- successfully removed old docker"
+	else
+		echo "- already removed docker"
 	fi
 else
 	echo "- not exist old docker"

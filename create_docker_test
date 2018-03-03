@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Constants
+VIRTUALHOST_TEMPLATE_FILE=virtualhost-apache-template.conf
+
 echo "---- Creating docker"
 
 if [ $# -lt 1 ]
@@ -36,25 +39,38 @@ name=$1$date
 
 echo $name > $DOCKER_RUNNING_FILE
 
+echo "---- Setting virtualhosts"
+
 PORT=$(( ( $RANDOM % 3000 )  + 62000 ))
 PORTS_DOCKER=""
 PORTS_STRING=""
 
 while read port_number service_name
 do
-	echo "Setting service $service_name at port $port_number"
+	echo "- service $service_name at port $port_number"
 
+	SERVER_NAME="$1-$service_name.dyser.tech"
+	VIRTUALHOST_FILENAME="virtualhost-$1-$port_number.conf"
+
+	cp $VIRTUALHOST_TEMPLATE_FILE $VIRTUALHOST_FILENAME 
+
+	sed -i "s/SERVER_NAME/$SERVER_NAME/g" $VIRTUALHOST_FILENAME
+	sed -i "s/PORT/$PORT/g" $VIRTUALHOST_FILENAME
+	
 	PORTS_DOCKER="$PORTS_DOCKER $port_number"
 	PORTS_STRING="$PORTS_STRING -p $PORT:$port_number"
 	PORT=$(( $PORT + 1))
 done < PORTS
 
-echo $PORTS_STRING
-
 sed "s/PORTS/$PORTS_DOCKER/g" Dockerfile_template > Dockerfile
 
 #Run docker
+
+echo "---- Running docker"
+
 #docker build -t sshdo .
 #docker run -d -p $2:22 --name $name -t sshdo
+
+echo "docker run -d $PORTS_STRING --name $name -t sshdo"
 
 #docker exec $name -t docker-entrypoint.sh
