@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "====DOCKER-AS-VM===="
+case "$1" in
+start)
+	/scripts/create_docker $2
+	;;
+stop)
+	/scripts/kill_docker $2
+	;;
+configure)
+	/scripts/configure_server
+	;;
+*)
+	echo "Usage: $0 {start <name>|stop <name>|configure}"
+esac
+
+exit 0
