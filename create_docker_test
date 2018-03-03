@@ -5,6 +5,10 @@ VIRTUALHOST_TEMPLATE_FILE=virtualhost-apache-template.conf
 
 echo "---- Creating docker"
 
+if [ $(id -u) -ne 0 ]; then
+	echo "- not root"
+fi
+
 if [ $# -lt 1 ]
 then
 	echo "ERROR: not enough arguments"
@@ -62,6 +66,9 @@ do
 	PORT=$(( $PORT + 1))
 done < PORTS
 
+service apache2 restart
+
+#Setting dockerfile
 sed "s/PORTS/$PORTS_DOCKER/g" Dockerfile_template > Dockerfile
 
 #Run docker
