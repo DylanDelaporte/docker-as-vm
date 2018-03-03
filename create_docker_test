@@ -2,6 +2,7 @@
 
 #Constants
 VIRTUALHOST_TEMPLATE_FILE=virtualhost-apache-template.conf
+APACHE_SITES=/etc/apache2/sites-available/
 
 echo "---- Creating docker"
 
@@ -60,6 +61,15 @@ do
 
 	sed -i "s/SERVER_NAME/$SERVER_NAME/g" $VIRTUALHOST_FILENAME
 	sed -i "s/PORT/$PORT/g" $VIRTUALHOST_FILENAME
+
+	if [ -f $APACHE_SITES$VIRTUAHOST_FILENAME ]; then
+		echo "- already exists virtualhost"
+ 		rm $APACHE_SITES$VIRTUALHOST_FILENAME
+	fi
+
+	mv $VIRTUALHOST_FILENAME $APACHE_SITES
+
+	a2ensite $VIRTUALHOST_FILENAME > /dev/null
 	
 	PORTS_DOCKER="$PORTS_DOCKER $port_number"
 	PORTS_STRING="$PORTS_STRING -p $PORT:$port_number"
