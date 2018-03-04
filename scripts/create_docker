@@ -1,48 +1,51 @@
 #!/bin/bash
 
-#Constants
-VIRTUALHOST_TEMPLATE_FILE=virtualhost-apache-template.conf
-APACHE_SITES=/etc/apache2/sites-available/
-
-echo "---- Creating docker"
-
 if [ $(id -u) -ne 0 ]; then
 	echo "- not root"
-fi
-
-if [ $# -lt 1 ]
-then
-	echo "ERROR: not enough arguments"
 	exit 1
 fi
 
-echo "- docker name: $1"
+if [ $# -lt 2 ]; then
+	echo "- missing docker <name>"
+	exit 1
+fi
 
-DOCKER_RUNNING_FILE=docker$1.running
+echo "---- Setting constants"
+
+#Constants
+PATH_DEPO=$1
+
+DOCKER_NAME=$2
+DOCKER_UNAME=${DOCKER_NAME}$(date +"%s")
+
+SCRIPTS_DIR=${PATH_DEPO}scripts/
+CONFIG_DIR=${PATH_DEPO}config/
+TEMPLATES_DIR=${PATH_DEPO}templates/
+INSTANCE_DIR=${PATH_DEPO}instance-${DOCKER_NAME}/
+
+VIRTUALHOST_TEMPLATE_FILE=${TEMPLATES_DIR}virtualhost-apache-template.conf
+APACHE_SITES=/etc/apache2/sites-available/
+
+DOCKER_FILE_TEMPLATE=${TEMPLATES_DIR}Dockerfile_template
+DOCKER_FILE_FINAL=${INSTANCE_DIR}Dockerfile
+
+DOCKER_RUNNING_FILE=${INSTANCE_DIR}docker.running
+PORTS_FILE=${CONFIG_DIR}ports
+COMMANDS_FILE=${CONFIG_DIR}docker-entrypoint.sh
+
+echo "---- Creating docker"
+echo "- docker name ${DOCKER_NAME}"
+
+mkdir -p $INSTANCE_DIR
 
 #Kill old running docker
-./kill_docker $1
-#if [ -f $DOCKER_RUNNING_FILE ]; then
-#	OLD_NAME=$(cat $DOCKER_RUNNING_FILE)
-#
-#	if [ "$(docker ps -q -f name=$OLD_NAME)" ]; then
-#		echo "- found existing docker"
-#
-#		RUNNING=$(docker inspect --format="{{.State.Running}}" $OLD_NAME 2> /dev/null)
-#
-#		if [ ! "$RUNNING" == "false" ]; then
-#			docker kill $OLD_NAME
-#		fi
-#
-#		docker rm $OLD_NAME
-#	fi
-#fi
+${SCRIPTS_DIR}kill_docker ${PATH_DEPO} ${DOCKER_NAME}
 
 #Generate new name with timestamp
-date=$(date +"%s")
-name=$1$date
+#date=$(date +"%s")
+#name=${DOCKER_NAME}${date}
 
-echo $name > $DOCKER_RUNNING_FILE
+echo $DOCKER_UNAME > ${DOCKER_RUNNING_FILE}
 
 echo "---- Setting virtualhosts"
 
@@ -54,39 +57,44 @@ while read port_number service_name
 do
 	echo "- service $service_name at port $port_number"
 
-	SERVER_NAME="$1-$service_name.dyser.tech"
-	VIRTUALHOST_FILENAME="virtualhost-$1-$port_number.conf"
+	SERVER_NAME="$DOCKER_NAME-$service_name.dyser.tech"
 
-	cp $VIRTUALHOST_TEMPLATE_FILE $VIRTUALHOST_FILENAME 
+	VIRTUALHOST_FILENAME=virtualhost-${DOCKER_NAME}-${port_number}.conf
+	VIRTUALHOST_FILE=${INSTANCE_DIR}${VIRTUALHOST_FILENAME}
 
-	sed -i "s/SERVER_NAME/$SERVER_NAME/g" $VIRTUALHOST_FILENAME
-	sed -i "s/PORT/$PORT/g" $VIRTUALHOST_FILENAME
+	rm -f ${VIRTUALHOST_FILE}
+	cp $VIRTUALHOST_TEMPLATE_FILE ${VIRTUALHOST_FILE} 
 
-	if [ -f $APACHE_SITES$VIRTUAHOST_FILENAME ]; then
+	sed -i "s/SERVER_NAME/$SERVER_NAME/g" $VIRTUALHOST_FILE
+	sed -i "s/PORT/$PORT/g" $VIRTUALHOST_FILE
+
+	if [ -f ${APACHE_SITES}${VIRTUAHOST_FILENAME} ]; then
 		echo "- already exists virtualhost"
- 		rm $APACHE_SITES$VIRTUALHOST_FILENAME
+ 		rm ${APACHE_SITES}${VIRTUALHOST_FILENAME}
 	fi
 
-	mv $VIRTUALHOST_FILENAME $APACHE_SITES
+	cp ${VIRTUALHOST_FILE} $APACHE_SITES
 
 	a2ensite $VIRTUALHOST_FILENAME > /dev/null
 	
 	PORTS_DOCKER="$PORTS_DOCKER $port_number"
 	PORTS_STRING="$PORTS_STRING -p $PORT:$port_number"
 	PORT=$(( $PORT + 1))
-done < PORTS
+done < $PORTS_FILE
 
 service apache2 restart
 
-#Setting dockerfile
-sed "s/PORTS/$PORTS_DOCKER/g" Dockerfile_template > Dockerfile
+#Setting docker
+sed "s/PORTS/$PORTS_DOCKER/g" $DOCKER_FILE_TEMPLATE  > $DOCKER_FILE_FINAL
+
+cp $COMMANDS_FILE $INSTANCE_DIR
 
 #Run docker
 
 echo "---- Running docker"
 
 #docker build -t sshdo .
-#docker run -d -p $2:22 --name $name -t sshdo
+#docker run -d -p $2:22 --name $DOCKER_UNAME -t sshdo
 
 echo "docker run -d $PORTS_STRING --name $name -t sshdo"
 

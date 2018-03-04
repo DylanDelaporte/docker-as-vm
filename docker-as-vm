@@ -1,15 +1,20 @@
 #!/bin/bash
 
 echo "====DOCKER-AS-VM===="
+
+PATH_DEPO=$(pwd)/
+
+echo $PATH_DEPO
+
 case "$1" in
 start)
-	/scripts/create_docker $2
+	scripts/create_docker $PATH_DEPO $2
 	;;
 stop)
-	/scripts/kill_docker $2
+	scripts/kill_docker $PATH_DEPO $2
 	;;
 configure)
-	/scripts/configure_server
+	scripts/configure_server
 	;;
 *)
 	echo "Usage: $0 {start <name>|stop <name>|configure}"
