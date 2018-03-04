@@ -31,7 +31,9 @@ DOCKER_FILE_FINAL=${INSTANCE_DIR}Dockerfile
 
 DOCKER_RUNNING_FILE=${INSTANCE_DIR}docker.running
 PORTS_FILE=${CONFIG_DIR}ports
-COMMANDS_FILE=${CONFIG_DIR}docker-entrypoint.sh
+
+COMMANDS_CONFIG_FILE=${CONFIG_DIR}docker-commands.sh
+COMMANDS_INSTANCE_FILE=${INSTANCE_DIR}docker-entrypoint.sh
 
 echo "---- Creating docker"
 echo "- docker name ${DOCKER_NAME}"
@@ -87,15 +89,13 @@ service apache2 restart
 #Setting docker
 sed "s/PORTS/$PORTS_DOCKER/g" $DOCKER_FILE_TEMPLATE  > $DOCKER_FILE_FINAL
 
-cp $COMMANDS_FILE $INSTANCE_DIR
+cp $COMMANDS_CONFIG_FILE $COMMANDS_INSTANCE_FILE
 
 #Run docker
 
 echo "---- Running docker"
 
-#docker build -t sshdo .
-#docker run -d -p $2:22 --name $DOCKER_UNAME -t sshdo
+docker build -t sshdo .
+docker run -d $PORTS_STRING --name $DOCKER_UNAME -t sshdo
 
-echo "docker run -d $PORTS_STRING --name $name -t sshdo"
-
-#docker exec $name -t docker-entrypoint.sh
+docker exec $DOCKER_UNAME -t $COMMANDS_INSTANCE_FILE
