@@ -8,7 +8,7 @@ then
 	exit 1
 fi
 
-DOCKER_RUNNING_FILE=docker$1.running
+DOCKER_RUNNING_FILE=${1}instance-${2}/docker.running
 
 #Kill old running docker
 if [ -f $DOCKER_RUNNING_FILE ]; then
@@ -20,10 +20,10 @@ if [ -f $DOCKER_RUNNING_FILE ]; then
 		RUNNING=$(docker inspect --format="{{.State.Running}}" $OLD_NAME 2> /dev/null)
 
 		if [ ! "$RUNNING" == "false" ]; then
-			docker kill $OLD_NAME
+			docker kill $OLD_NAME > /dev/null
 		fi
 
-		docker rm $OLD_NAME
+		docker rm $OLD_NAME > /dev/null
 
 		echo "- successfully removed old docker"
 	else

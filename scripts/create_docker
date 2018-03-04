@@ -95,7 +95,7 @@ cp $COMMANDS_CONFIG_FILE $COMMANDS_INSTANCE_FILE
 
 echo "---- Running docker"
 
-docker build -t sshdo .
+docker build -t sshdo $INSTANCE_DIR
 docker run -d $PORTS_STRING --name $DOCKER_UNAME -t sshdo
 
-docker exec $DOCKER_UNAME -t $COMMANDS_INSTANCE_FILE
+docker exec $DOCKER_UNAME -t docker-entrypoint.sh

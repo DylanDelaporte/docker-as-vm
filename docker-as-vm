@@ -4,7 +4,7 @@ echo "====DOCKER-AS-VM===="
 
 PATH_DEPO=$(pwd)/
 
-echo $PATH_DEPO
+echo "Current path: $PATH_DEPO"
 
 case "$1" in
 start)
