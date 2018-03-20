@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "----Generate subdomain"
+
+if [ $# -lt 2 ]; then
+	echo "- no parameter"
+	exit 1
+fi
+
+SUBDOMAIN=$1
+DOMAIN_NAME=$2
+
+INSTANCE_DIR=$3
+
+DB_FILE=db.dyser.tech
+PATH_TO_DB_FILE=/etc/bind/
+
+#Here how you create a subdomain named $SUBDOMAIN
+cp ${PATH_TO_DB_FILE}${DB_FILE} ${INSTANCE_DIR}
+
+echo "${SUBDOMAIN}. CNAME ${DOMAIN_NAME}." >> ${INSTANCE_DIR}${DB_FILE}
+
+#service bind9 restart

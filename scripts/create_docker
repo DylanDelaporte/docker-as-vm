@@ -18,6 +18,8 @@ PATH_DEPO=$1
 DOCKER_NAME=$2
 DOCKER_UNAME=${DOCKER_NAME}$(date +"%s")
 
+DOMAIN_NAME=dyser.tech
+
 SCRIPTS_DIR=${PATH_DEPO}scripts/
 CONFIG_DIR=${PATH_DEPO}config/
 TEMPLATES_DIR=${PATH_DEPO}templates/
@@ -59,7 +61,7 @@ while read port_number service_name
 do
 	echo "- service $service_name at port $port_number"
 
-	SERVER_NAME="$DOCKER_NAME-$service_name.dyser.tech"
+	SERVER_NAME="${DOCKER_NAME}-${service_name}.${DOMAIN_NAME}"
 
 	VIRTUALHOST_FILENAME=virtualhost-${DOCKER_NAME}-${port_number}.conf
 	VIRTUALHOST_FILE=${INSTANCE_DIR}${VIRTUALHOST_FILENAME}
@@ -95,7 +97,11 @@ cp $COMMANDS_CONFIG_FILE $COMMANDS_INSTANCE_FILE
 
 echo "---- Running docker"
 
-docker build -t sshdo $INSTANCE_DIR
-docker run -d $PORTS_STRING --name $DOCKER_UNAME -t sshdo
+cd $INSTANCE_DIR
 
-docker exec $DOCKER_UNAME -t docker-entrypoint.sh
+docker build -t ${DOCKER_NAME} .
+docker run -d $PORTS_STRING --name $DOCKER_UNAME -t ${DOCKER_NAME}
+
+docker exec $DOCKER_UNAME  docker-entrypoint.sh
+
+echo "---- End of script"
