@@ -18,7 +18,7 @@ PATH_DEPO=$1
 DOCKER_NAME=$2
 DOCKER_UNAME=${DOCKER_NAME}$(date +"%s")
 
-DOMAIN_NAME=dyser.tech
+DOMAIN_NAME=here_your_domain
 
 SCRIPTS_DIR=${PATH_DEPO}scripts/
 CONFIG_DIR=${PATH_DEPO}config/
