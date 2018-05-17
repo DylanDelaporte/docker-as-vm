@@ -1,10 +1,20 @@
 # docker-as-vm
-Run as many docker instances as you want with simple scripts and automatic configurations scripts
-to let users access ressources of your server
 
-## More details
-This docker image creates ssh access (useful to manage an instance) and opens a port (80).
-In my case I use it for http but you can use it for another service.
+This set of scripts let you deploy easily docker instances with your own automatic configurations scripts. Also there are scripts that handle public development of an instance.
+
+Configuration files let you associate a subdomain to a service inside the docker
+For example if you want you can edit the `config/ports` file and then add the line `22 ssh`
+
+You will have to add features in a script to automatically add sub-domains (a default script has been added for bind)
+
+When you create your docker instance you will have access to the ssh service by <name-of-the-instance>-ssh.domain.com
+
+## Requirements
+
+- Docker
+- Apache server (optional)
+- 80 port opened (optional)
+- A DN (optional)
 
 ## Installation
 ### First steps
@@ -22,6 +32,7 @@ chmod +x create_docker.sh
 ./create_docker.sh "name"
 ~~~~
 
-## In the future (todo list)
+## Alpha version
 
-Read PORTS file and add automatically to docker wanted ports associated with subdomains name-servicename.domain.com
+This project is in development so there could be bugs, feel free to open an issue or create a pull request :)
+
