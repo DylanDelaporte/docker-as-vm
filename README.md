@@ -18,7 +18,7 @@ When you create your docker instance you will have access to the ssh service by 
 
 ## Installation
 ### First steps
-Prepare your server ...
+Setup your server ...
 ~~~~
 git clone https://github.com/DylanDelaporte/docker-as-vm.git
 cd docker-as-vm
