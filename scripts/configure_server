@@ -1,3 +1,11 @@
 #!/bin/sh
 
+echo "====DOCKER-AS-VM CONFIGURATION===="
+
+echo "----Entering informations----"
+dn=example.com
+read -p "Enter the domain name (example.com):" dn
+echo $dn > $1config/domain_name
+
+echo "----Installing packages----"
 apt-get update && apt-get install -y haproxy docker-ce

@@ -18,12 +18,12 @@ PATH_DEPO=$1
 DOCKER_NAME=$2
 DOCKER_UNAME=${DOCKER_NAME}$(date +"%s")
 
-DOMAIN_NAME=here_your_domain
-
 SCRIPTS_DIR=${PATH_DEPO}scripts/
 CONFIG_DIR=${PATH_DEPO}config/
 TEMPLATES_DIR=${PATH_DEPO}templates/
 INSTANCE_DIR=${PATH_DEPO}instance-${DOCKER_NAME}/
+
+DOMAIN_NAME=$(head -n 1 ${CONFIG_DIR}/domain_name)
 
 VIRTUALHOST_TEMPLATE_FILE=${TEMPLATES_DIR}virtualhost-apache-template.conf
 APACHE_SITES=/etc/apache2/sites-available/
