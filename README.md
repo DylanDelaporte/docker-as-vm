@@ -12,8 +12,8 @@ When you create your docker instance you will have access to the ssh service by 
 ## Requirements
 
 - Docker
-- Apache server (optional)
-- 80 port opened (optional)
+- HA Proxy (optional)
+- Opened ports for remote access (optional)
 - A DN (optional)
 
 ## Installation
@@ -22,14 +22,13 @@ Setup your server ...
 ~~~~
 git clone https://github.com/DylanDelaporte/docker-as-vm.git
 cd docker-as-vm
-chmod +x configure_host.sh
-./configure_host.sh
+chmod +x docker-as-vm
+./docker-as-vm configure
 ~~~~
 
 ### Create instances
 ~~~~
-chmod +x create_docker.sh
-./create_docker.sh "name"
+./docker-as-vm create <name>
 ~~~~
 
 ## Alpha version
